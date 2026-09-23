@@ -1,0 +1,119 @@
+schema_version = 1
+campaign_id = "five-suite-closed-loop-v1"
+scope = "configured-task-method-evaluation-not-universal-zero-shot-transfer"
+checkpoint = "artifacts/checkpoints/smolvla-libero/6721902bc4d61e50a3bfdb11dfb4cb626f05d102"
+scenes = [46, 47, 48, 49]
+flow_noise_seeds = [10057, 10157, 10257]
+simulator_seed = 42
+max_steps = 220
+device = "mps"
+conditions = [
+  "conflict",
+  "always_steer",
+  "oracle_monitor",
+  "learned_monitor",
+  "aligned_no_steer",
+  "aligned_monitor",
+  "aligned_forced_steer",
+  "wrong_sign",
+  "random",
+  "monitor_prompt_correction",
+  "oracle_prompt_correction",
+]
+
+[decision]
+unit = "task_x_scene_with_three_shared_noise_replicates"
+primary = "learned_monitor_minus_conflict"
+minimum_positive_tasks = 4
+minimum_positive_spatial_tasks = 2
+minimum_absolute_pooled_gain = 0.20
+require_positive_cluster_bootstrap_lower_95 = true
+minimum_monitor_conflict_trigger_rate = 0.80
+maximum_aligned_false_trigger_rate = 0.05
+maximum_aligned_success_harm = 0.05
+require_learned_above_wrong_sign_and_random = true
+minimum_oracle_prompt_success_per_task = 0.50
+prompt_correction_comparison = "descriptive_same_information_not_required_to_win"
+oracle_prompt = "viability_ceiling_not_a_steering_comparator"
+all_attempted_cells_in_intention_to_treat = true
+resume_rule = "reuse_hash_verified_complete_cells_only; rerun_incomplete_cells_with_identical_frozen_inputs; retain_failure_events"
+failure_rule = "no_positive_claim_if_incomplete_or_any_primary_gate_fails"
+next_plan_if_fail = "stop_claiming_robust_configured_task_repair; localize_failure_by_monitor_controller_or_scene_viability; use_a_new_model_or_benchmark_before_a_new_confirmatory_run"
+
+[[tasks]]
+name = "object-ketchup-vs-absent-milk"
+suite = "libero_object"
+task_id = 4
+steering_bank = "artifacts/controllers/object_task4_ketchup_vs_absent_milk_ridge_l31_expert_output_token0_train1_2_3_5_7_9_rollout67.pt"
+monitor_bank = "artifacts/controllers/object_task4_counterbalanced_presence_probe_ketchup_milk_calibrated_dev0_4_6_8.pt"
+release_mode = "grasp_close"
+release_monitor_interval = 5
+release_reactivation_patience = 2
+grasp_close_fraction = 0.75
+grasp_reopen_fraction = 0.90
+grasp_lift_threshold = 0.03
+grasp_release_patience = 2
+monitor_arm_timeout = 3
+
+[[tasks]]
+name = "object-milk-vs-absent-cream-cheese"
+suite = "libero_object"
+task_id = 7
+steering_bank = "artifacts/controllers/object_task7_milk_vs_absent_cream_cheese_ridge_l31_expert_output_token0_train1_2_3_5_7_9_rollout67.pt"
+monitor_bank = "artifacts/controllers/object_task7_counterbalanced_presence_probe_milk_cream_cheese_train1_2_3_5_7_9_15_24_calibrated_dev0_4_6_8.pt"
+release_mode = "post_grasp_reopen"
+release_monitor_interval = 5
+release_reactivation_patience = 2
+grasp_close_fraction = 0.75
+grasp_reopen_fraction = 0.90
+grasp_lift_threshold = 0.03
+grasp_release_patience = 1
+monitor_arm_timeout = 3
+
+[[tasks]]
+name = "spatial-cookie-box-vs-cabinet"
+suite = "libero_spatial"
+task_id = 3
+steering_bank = "artifacts/controllers/spatial_task3_visual_only_ridge_l31_expert_output_token0_train3_5_9_multinoise.pt"
+monitor_bank = "artifacts/controllers/spatial_location_monitor_tasks1_3_5_6_7_9_train1_2_3_5.pt"
+release_monitor_bank = "artifacts/controllers/spatial_location_monitor_6class_inhand_tasks3_5_7_9_train1_2_3_5_rollout3_5_9.pt"
+release_mode = "destination_monitor"
+release_monitor_interval = 1
+release_reactivation_patience = 2
+grasp_close_fraction = 0.75
+grasp_reopen_fraction = 0.90
+grasp_lift_threshold = 0.03
+grasp_release_patience = 2
+monitor_arm_timeout = 3
+
+[[tasks]]
+name = "spatial-ramekin-vs-cookie-box"
+suite = "libero_spatial"
+task_id = 5
+steering_bank = "artifacts/controllers/spatial_task5_visual_only_ridge_l31_expert_output_token0_train1_2_3_5_7_9_rollout67_77.pt"
+monitor_bank = "artifacts/controllers/spatial_location_monitor_tasks1_3_5_6_7_9_train1_2_3_5.pt"
+release_monitor_bank = "artifacts/controllers/spatial_location_monitor_6class_inhand_tasks3_5_7_9_train1_2_3_5_rollout3_5_9.pt"
+release_mode = "destination_monitor"
+release_monitor_interval = 1
+release_reactivation_patience = 2
+grasp_close_fraction = 0.75
+grasp_reopen_fraction = 0.90
+grasp_lift_threshold = 0.03
+grasp_release_patience = 2
+monitor_arm_timeout = 3
+
+[[tasks]]
+name = "spatial-cookie-box-vs-stove"
+suite = "libero_spatial"
+task_id = 6
+steering_bank = "artifacts/controllers/spatial_task6_cross_relation_ridge_l31_expert_output_token0_train1_2_5_7_9_rollout67_77.pt"
+monitor_bank = "artifacts/controllers/spatial_location_monitor_tasks1_3_5_6_7_9_train1_2_3_5.pt"
+release_monitor_bank = "artifacts/controllers/spatial_location_monitor_6class_inhand_tasks3_5_7_9_train1_2_3_5_rollout3_5_9.pt"
+release_mode = "destination_monitor"
+release_monitor_interval = 1
+release_reactivation_patience = 2
+grasp_close_fraction = 0.75
+grasp_reopen_fraction = 0.90
+grasp_lift_threshold = 0.03
+grasp_release_patience = 2
+monitor_arm_timeout = 3

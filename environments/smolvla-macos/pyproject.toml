@@ -1,0 +1,24 @@
+[project]
+name = "causal-vla-smolvla-macos"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "action-atlas",
+  "bddl>=1.0,<4.0",
+  "causal-vla-routing",
+  "easydict>=1.9",
+  "gym==0.26.2",
+  "libero",
+  "lerobot[smolvla]",
+  "mujoco==3.1.6",
+  "robosuite>=1.4,<1.5",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+action-atlas = { path = "../../third_party/action-atlas", editable = true }
+causal-vla-routing = { path = "../..", editable = true }
+libero = { path = "../../third_party/action-atlas/LIBERO", editable = true }
+lerobot = { path = "../../third_party/action-atlas/lerobot", editable = true }

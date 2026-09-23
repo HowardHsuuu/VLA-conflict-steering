@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "status": "paper_evidence_gate_pass",
+  "evidence_level": "aggregate_only",
+  "total_rollouts": 660,
+  "design": {
+    "tasks": [
+      "object-ketchup-vs-absent-milk",
+      "object-milk-vs-absent-cream-cheese",
+      "spatial-cookie-box-vs-cabinet",
+      "spatial-cookie-box-vs-stove",
+      "spatial-ramekin-vs-cookie-box"
+    ],
+    "scenes": [46, 47, 48, 49],
+    "noise_seeds": [10057, 10157, 10257],
+    "conditions": [
+      "conflict",
+      "always_steer",
+      "oracle_monitor",
+      "learned_monitor",
+      "aligned_no_steer",
+      "aligned_monitor",
+      "aligned_forced_steer",
+      "wrong_sign",
+      "random",
+      "monitor_prompt_correction",
+      "oracle_prompt_correction"
+    ]
+  },
+  "condition_successes_out_of_60": {
+    "conflict": 5,
+    "always_steer": 46,
+    "oracle_monitor": 45,
+    "learned_monitor": 45,
+    "aligned_no_steer": 46,
+    "aligned_monitor": 46,
+    "aligned_forced_steer": 9,
+    "wrong_sign": 1,
+    "random": 8,
+    "monitor_prompt_correction": 49,
+    "oracle_prompt_correction": 49
+  },
+  "selected_task_successes_out_of_12": {
+    "conflict": {
+      "object-ketchup-vs-absent-milk": 5,
+      "object-milk-vs-absent-cream-cheese": 0,
+      "spatial-cookie-box-vs-cabinet": 0,
+      "spatial-cookie-box-vs-stove": 0,
+      "spatial-ramekin-vs-cookie-box": 0
+    },
+    "learned_monitor": {
+      "object-ketchup-vs-absent-milk": 11,
+      "object-milk-vs-absent-cream-cheese": 10,
+      "spatial-cookie-box-vs-cabinet": 6,
+      "spatial-cookie-box-vs-stove": 8,
+      "spatial-ramekin-vs-cookie-box": 10
+    },
+    "monitor_prompt_correction": {
+      "object-ketchup-vs-absent-milk": 12,
+      "object-milk-vs-absent-cream-cheese": 10,
+      "spatial-cookie-box-vs-cabinet": 6,
+      "spatial-cookie-box-vs-stove": 10,
+      "spatial-ramekin-vs-cookie-box": 11
+    },
+    "oracle_prompt_correction": {
+      "object-ketchup-vs-absent-milk": 12,
+      "object-milk-vs-absent-cream-cheese": 10,
+      "spatial-cookie-box-vs-cabinet": 6,
+      "spatial-cookie-box-vs-stove": 10,
+      "spatial-ramekin-vs-cookie-box": 11
+    }
+  },
+  "learned_vs_conflict": {
+    "wins": 40,
+    "losses": 0,
+    "ties": 20
+  },
+  "prompt_vs_steering": {
+    "prompt_only": 7,
+    "steering_only": 3,
+    "ties": 50
+  },
+  "monitor_triggers": {
+    "conflict_out_of_60": 60,
+    "aligned_out_of_60": 0
+  },
+  "bootstrap_95": [0.55, 0.7833333333],
+  "preregistered_gates": {
+    "positive_tasks_at_least_4_of_5": true,
+    "positive_spatial_tasks_at_least_2_of_3": true,
+    "pooled_absolute_gain_at_least_20pp": true,
+    "task_stratified_scene_cluster_ci_lower_above_zero": true,
+    "monitor_conflict_trigger_rate_at_least_80pct": true,
+    "aligned_false_trigger_rate_at_most_5pct": true,
+    "aligned_success_harm_at_most_5pp": true,
+    "learned_success_above_wrong_sign": true,
+    "learned_success_above_random": true,
+    "oracle_prompt_viability_at_least_50pct_each_task": true
+  },
+  "infrastructure_note": {
+    "initial_completed_cells": 175,
+    "continuation": "outcome-blind process isolation",
+    "scientific_protocol_changed": false
+  }
+}

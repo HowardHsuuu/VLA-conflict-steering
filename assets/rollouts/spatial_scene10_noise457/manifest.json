@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "artifact_kind": "disclosed_outcome_selected_rollout_pair",
+  "selection_policy": "Outcome-selected mechanism illustration from an earlier development evaluation. This is not a random sample and is not part of the 660-rollout result table.",
+  "task": "spatial-ramekin-vs-cookie-box",
+  "episode_index": 10,
+  "noise_seed": 457,
+  "frame_stride": 2,
+  "conditions": [
+    "conflict",
+    "learned_monitor"
+  ],
+  "outcomes": {
+    "conflict": {
+      "success": false,
+      "steps": 220,
+      "steering_calls": 0,
+      "trigger_source": "none",
+      "trigger_step": null,
+      "release_step": null
+    },
+    "learned_monitor": {
+      "success": true,
+      "steps": 81,
+      "steering_calls": 73,
+      "trigger_source": "learned",
+      "trigger_step": 0,
+      "release_step": 46
+    }
+  },
+  "videos": {
+    "conflict": {
+      "path": "conflict.mp4",
+      "container_format": "mp4",
+      "codec": "libx264",
+      "pixel_format": "yuv420p",
+      "fps": 20,
+      "frame_count": 110,
+      "frame_shape": [256, 256, 3]
+    },
+    "learned_monitor": {
+      "path": "learned_monitor.mp4",
+      "container_format": "mp4",
+      "codec": "libx264",
+      "pixel_format": "yuv420p",
+      "fps": 20,
+      "frame_count": 41,
+      "frame_shape": [256, 256, 3]
+    }
+  }
+}

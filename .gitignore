@@ -1,0 +1,33 @@
+.DS_Store
+.venv/
+.uv-cache/
+.uv-python/
+.pytest_cache/
+.coverage
+.ruff_cache/
+.mypy_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Credentials and machine-local configuration never belong in the repository.
+.local/
+*.token
+*.api_key
+
+# Downloaded model, fitted weights, and machine-specific campaign state.
+artifacts/checkpoints/
+artifacts/controllers/*.pt
+artifacts/hf-home/
+artifacts/libero-config/
+artifacts/results/
+results/**/cells.jsonl
+results/**/failure*.json
+results/**/infrastructure_remediation*.json
+third_party/
+runs/
+
+# The manuscript is maintained outside this public code repository.
+paper/

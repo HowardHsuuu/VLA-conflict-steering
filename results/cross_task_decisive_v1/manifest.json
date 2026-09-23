@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "release_id": "five-suite-evaluation-v1",
+  "evidence_level": "aggregate_only",
+  "summary_file": "aggregate_results.json",
+  "raw_rollouts_included": false,
+  "controller_weights_included": false
+}
