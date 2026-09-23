@@ -318,9 +318,7 @@ class ResidualStreamSwap:
         """Fail unless every captured source and residual input was used exactly once."""
 
         if self.call_index != len(self.source):
-            raise RuntimeError(
-                f"Consumed {self.call_index} of {len(self.source)} source residuals"
-            )
+            raise RuntimeError(f"Consumed {self.call_index} of {len(self.source)} source residuals")
         if len(self.residual_inputs) != self.call_index:
             raise RuntimeError(
                 f"Captured {len(self.residual_inputs)} residual inputs for "

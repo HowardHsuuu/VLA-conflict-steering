@@ -133,8 +133,7 @@ def batched_token_patch(
     batch_size = len(patches)
     result: KVCache = {
         index: {
-            name: tensor.expand(batch_size, *tensor.shape[1:])
-            for name, tensor in entry.items()
+            name: tensor.expand(batch_size, *tensor.shape[1:]) for name, tensor in entry.items()
         }
         for index, entry in conflict.items()
     }
@@ -147,9 +146,7 @@ def batched_token_patch(
             for row, patch in enumerate(patches):
                 positions = list(patch.positions)
                 base_tokens = base[0, positions]
-                updated[row, positions] = (
-                    base_tokens + scale * (source[0, positions] - base_tokens)
-                )
+                updated[row, positions] = base_tokens + scale * (source[0, positions] - base_tokens)
         selected[component] = updated
     result[layer] = selected
     return result
@@ -170,9 +167,7 @@ def aggregate_patch_rows(rows: Sequence[Mapping[str, object]]) -> list[dict[str,
 
     summaries: list[dict[str, object]] = []
     for (layer, timestep, token_patch, components), members in grouped.items():
-        executed = [
-            float(cast(float, member["executed_mse_recovery"])) for member in members
-        ]
+        executed = [float(cast(float, member["executed_mse_recovery"])) for member in members]
         chunk = [float(cast(float, member["chunk_mse_recovery"])) for member in members]
         summaries.append(
             {

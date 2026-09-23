@@ -149,8 +149,7 @@ def _loo_component_predictions(
                     * prototype.scale
                 )
                 ridge_predictions.append(
-                    regressor.predict(features[index : index + 1]).reshape(1, -1)
-                    * ridge.scale
+                    regressor.predict(features[index : index + 1]).reshape(1, -1) * ridge.scale
                 )
                 targets.append(directions[index : index + 1])
     return (
@@ -376,9 +375,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     prototype = load_expert_prototype_bank(args.prototype_bank)
     ridge = load_expert_ridge_bank(args.ridge_bank)
-    bank, rows = fit_expert_blend_bank(
-        prototype, ridge, weight_candidates=args.weight_candidates
-    )
+    bank, rows = fit_expert_blend_bank(prototype, ridge, weight_candidates=args.weight_candidates)
     save_expert_blend_bank(bank, args.bank_output)
     report = ExpertBlendFitReport(
         schema_version=1,

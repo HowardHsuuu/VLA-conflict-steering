@@ -595,20 +595,14 @@ def fit_spatial_location_probe_bank(
     ):
         raise ValueError("Spatial trajectory collection settings are invalid")
     tasks = tuple(spatial_support_task(task_id) for task_id in task_ids)
-    rollout_tasks = tuple(
-        spatial_support_task(task_id) for task_id in destination_rollout_task_ids
-    )
+    rollout_tasks = tuple(spatial_support_task(task_id) for task_id in destination_rollout_task_ids)
     if not set(destination_rollout_task_ids) <= set(task_ids):
         raise ValueError("Destination rollout tasks must be included in spatial fit tasks")
     spatial_labels = (
-        _SPATIAL_TRAJECTORY_LOCATION_LABELS
-        if rollout_tasks
-        else _SPATIAL_LOCATION_LABELS
+        _SPATIAL_TRAJECTORY_LOCATION_LABELS if rollout_tasks else _SPATIAL_LOCATION_LABELS
     )
     observed_labels = {
-        label
-        for task in tasks
-        for label in (task.instructed_support, task.alternate_support)
+        label for task in tasks for label in (task.instructed_support, task.alternate_support)
     } | {"plate"}
     if observed_labels != set(_SPATIAL_LOCATION_LABELS):
         raise ValueError(
@@ -620,9 +614,7 @@ def fit_spatial_location_probe_bank(
     checkpoint_path = str(Path(checkpoint).resolve())
     policy = adapter.load_model(checkpoint_path, device=device)
     torch_device = torch.device(device)
-    feature_lists: dict[int, list[Tensor]] = {
-        layer: [] for layer in representation_layers
-    }
+    feature_lists: dict[int, list[Tensor]] = {layer: [] for layer in representation_layers}
     label_indices: list[int] = []
     row_tasks: list[int] = []
     row_episodes: list[int] = []
@@ -637,9 +629,7 @@ def fit_spatial_location_probe_bank(
         condition: SpatialLocationTrainingCondition,
         location_label: str,
     ) -> None:
-        batch = prepare_libero_batch(
-            adapter, observation, "Where is the black bowl right now?"
-        )
+        batch = prepare_libero_batch(adapter, observation, "Where is the black bowl right now?")
         captured = capture_location_representations(
             policy,
             batch,
@@ -651,9 +641,7 @@ def fit_spatial_location_probe_bank(
         label_indices.append(spatial_labels.index(location_label))
         row_tasks.append(task_id)
         row_episodes.append(episode_index)
-        state = SpatialLocationState(
-            task_id, episode_index, condition, location_label
-        )
+        state = SpatialLocationState(task_id, episode_index, condition, location_label)
         states.append(state)
         if progress is not None:
             progress(state)
@@ -713,9 +701,7 @@ def fit_spatial_location_probe_bank(
                 if native_prompt != task.native_prompt:
                     raise ValueError("Native instruction differs from intervention task")
                 environment.reset(seed=simulator_seed + episode_index)
-                observation, _ = apply_unique_bowl_scene(
-                    environment, condition="conflict"
-                )
+                observation, _ = apply_unique_bowl_scene(environment, condition="conflict")
                 initial_gripper_width = _gripper_width(observation)
                 close_streak = 0
                 grasp_latched_step: int | None = None
@@ -746,9 +732,7 @@ def fit_spatial_location_probe_bank(
                         not success
                         and gripper_width <= initial_gripper_width * 0.90
                         and step >= grasp_latched_step + in_hand_min_steps_after_grasp
-                        and (
-                            step - grasp_latched_step - in_hand_min_steps_after_grasp
-                        )
+                        and (step - grasp_latched_step - in_hand_min_steps_after_grasp)
                         % in_hand_sample_stride
                         == 0
                     ):
@@ -1061,10 +1045,7 @@ def evaluate_location_probe_spatial_interventions(
 
     if not task_ids or not episode_indices or not conditions:
         raise ValueError("Tasks, episodes, and conditions must be nonempty")
-    if any(
-        len(set(values)) != len(values)
-        for values in (task_ids, episode_indices, conditions)
-    ):
+    if any(len(set(values)) != len(values) for values in (task_ids, episode_indices, conditions)):
         raise ValueError("Tasks, episodes, and conditions must be unique")
     if set(episode_indices) & set(range(10, 15)):
         raise ValueError("Historical held-out episodes 10--14 are sealed")
@@ -1075,9 +1056,7 @@ def evaluate_location_probe_spatial_interventions(
     policy = adapter.load_model(checkpoint_path, device=device)
     bank = load_location_probe_bank(bank_path)
     required_labels = {
-        label
-        for task in tasks
-        for label in (task.instructed_support, task.alternate_support)
+        label for task in tasks for label in (task.instructed_support, task.alternate_support)
     }
     missing_labels = required_labels - set(bank.labels)
     if missing_labels:
@@ -1117,9 +1096,7 @@ def evaluate_location_probe_spatial_interventions(
                         vision,
                         language_location_evidence(
                             bank.labels,
-                            "plate"
-                            if condition == "destination"
-                            else task.instructed_support,
+                            "plate" if condition == "destination" else task.instructed_support,
                         ),
                     )
                 finally:
@@ -1145,8 +1122,7 @@ def evaluate_location_probe_spatial_interventions(
                     monitor_status=assessment.status,
                     expected_status=expected_status,
                     correct=(
-                        assessment.status == expected_status
-                        and vision.top_label == actual_label
+                        assessment.status == expected_status and vision.top_label == actual_label
                     ),
                 )
                 examples.append(example)
@@ -1161,9 +1137,7 @@ def evaluate_location_probe_spatial_interventions(
         example.monitor_status == "conflict" and example.predicted_label == example.actual_label
         for example in conflict_examples
     )
-    location_correct = sum(
-        example.predicted_label == example.actual_label for example in examples
-    )
+    location_correct = sum(example.predicted_label == example.actual_label for example in examples)
     return SpatialLocationMonitorReport(
         schema_version=1,
         checkpoint=checkpoint_path,
@@ -1176,9 +1150,7 @@ def evaluate_location_probe_spatial_interventions(
         aligned_false_trigger_rate=(
             aligned_false_triggers / len(aligned_examples) if aligned_examples else 0.0
         ),
-        conflict_recall=(
-            conflict_triggers / len(conflict_examples) if conflict_examples else 0.0
-        ),
+        conflict_recall=(conflict_triggers / len(conflict_examples) if conflict_examples else 0.0),
         actual_location_accuracy=location_correct / len(examples),
     )
 
@@ -1262,9 +1234,7 @@ def main(argv: list[str] | None = None) -> int:
             noise_seed=args.noise_seed,
             max_steps=args.max_steps,
             destination_rollout_task_ids=args.destination_rollout_tasks or (),
-            destination_rollout_episode_indices=(
-                args.destination_rollout_episodes or ()
-            ),
+            destination_rollout_episode_indices=(args.destination_rollout_episodes or ()),
             in_hand_sample_stride=args.in_hand_sample_stride,
             in_hand_min_steps_after_grasp=args.in_hand_min_steps_after_grasp,
             grasp_close_fraction=args.grasp_close_fraction,
@@ -1288,9 +1258,7 @@ def main(argv: list[str] | None = None) -> int:
         _write_report(args.output, spatial_fit_report.to_dict())
         return 0
     if args.command == "evaluate-spatial":
-        conditions = tuple(
-            item.strip() for item in args.conditions.split(",") if item.strip()
-        )
+        conditions = tuple(item.strip() for item in args.conditions.split(",") if item.strip())
         if not set(conditions) <= {"aligned", "conflict", "destination"}:
             raise ValueError("Spatial monitor condition is unknown")
         spatial_report = evaluate_location_probe_spatial_interventions(

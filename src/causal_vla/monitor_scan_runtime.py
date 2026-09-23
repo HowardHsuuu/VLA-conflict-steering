@@ -90,9 +90,7 @@ def _answer(label: str) -> str:
 
 
 def _aliases(labels: tuple[str, ...]) -> dict[str, tuple[str, ...]]:
-    aliases: dict[str, tuple[str, ...]] = {
-        label: (label.replace("_", " "),) for label in labels
-    }
+    aliases: dict[str, tuple[str, ...]] = {label: (label.replace("_", " "),) for label in labels}
     if "cabinet" in labels:
         aliases["cabinet"] = ("wooden cabinet",)
     return aliases

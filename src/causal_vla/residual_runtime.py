@@ -92,9 +92,7 @@ def capture_pre_and_post_layer_residuals(
     handles = []
     for layer in layer_indices:
         handles.append(
-            cast(nn.Module, layers[layer].input_layernorm).register_forward_pre_hook(
-                pre[layer]
-            )
+            cast(nn.Module, layers[layer].input_layernorm).register_forward_pre_hook(pre[layer])
         )
         handles.append(
             post_layer_capture_module(layers, final_norm, layer).register_forward_pre_hook(

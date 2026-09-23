@@ -84,9 +84,7 @@ class CachedSteeringArtifact:
         if not self.fit_positions or len(set(self.fit_positions)) != len(self.fit_positions):
             raise ValueError("Fit positions must be nonempty and unique")
         if len(self.fit_positions) != len(self.positions) and len(self.fit_positions) != 1:
-            raise ValueError(
-                "Fit and runtime spans must match unless one fit token is broadcast"
-            )
+            raise ValueError("Fit and runtime spans must match unless one fit token is broadcast")
         if set(self.directions) != set(self.layers):
             raise ValueError("Every selected layer must have cached directions")
         if self.input_directions and set(self.input_directions) != set(self.layers):
@@ -99,9 +97,7 @@ class CachedSteeringArtifact:
                     if direction.ndim < 3:
                         raise ValueError("Directions must have [batch, positions, hidden] shape")
                     if direction.shape[-2] != len(self.fit_positions):
-                        raise ValueError(
-                            "Direction position dimension does not match fit metadata"
-                        )
+                        raise ValueError("Direction position dimension does not match fit metadata")
                     if not bool(torch.isfinite(direction).all()):
                         raise ValueError("Directions must contain only finite values")
 
@@ -141,12 +137,8 @@ class CachedSteeringArtifact:
             "runtime_base_span_token_ids": list(self.runtime_base_span_token_ids),
             "runtime_target_span_token_ids": list(self.runtime_target_span_token_ids),
             "direction_component": self.direction_component,
-            "runtime_changed_token_positions": list(
-                self.runtime_changed_token_positions
-            ),
-            "intervention_overlaps_changed_tokens": (
-                self.intervention_overlaps_changed_tokens
-            ),
+            "runtime_changed_token_positions": list(self.runtime_changed_token_positions),
+            "intervention_overlaps_changed_tokens": (self.intervention_overlaps_changed_tokens),
             "cross_template": (
                 self.fit_base_prompt != self.base_prompt
                 or self.fit_target_prompt != self.target_prompt
@@ -166,17 +158,15 @@ class CachedSteeringArtifact:
         arrays: dict[str, np.ndarray[Any, Any]] = {}
         for layer, calls in self.directions.items():
             for index, direction in enumerate(calls):
-                arrays[f"layer_{layer}_call_{index}"] = (
-                    direction.detach().float().cpu().numpy()
-                )
+                arrays[f"layer_{layer}_call_{index}"] = direction.detach().float().cpu().numpy()
         for layer, calls in self.input_directions.items():
             for index, direction in enumerate(calls):
                 arrays[f"input_layer_{layer}_call_{index}"] = (
                     direction.detach().float().cpu().numpy()
                 )
-        metadata_bytes = json.dumps(
-            self.metadata(), sort_keys=True, separators=(",", ":")
-        ).encode("utf-8")
+        metadata_bytes = json.dumps(self.metadata(), sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
         arrays["metadata_json"] = np.frombuffer(metadata_bytes, dtype=np.uint8)
         temporary = destination.with_suffix(destination.suffix + ".tmp")
         with temporary.open("wb") as handle:
@@ -224,12 +214,9 @@ class CachedSteeringArtifact:
             simulator_seed=int(metadata["simulator_seed"]),
             directions=directions,
             fit_base_prompt=str(metadata.get("fit_base_prompt", metadata["base_prompt"])),
-            fit_target_prompt=str(
-                metadata.get("fit_target_prompt", metadata["target_prompt"])
-            ),
+            fit_target_prompt=str(metadata.get("fit_target_prompt", metadata["target_prompt"])),
             fit_positions=tuple(
-                int(position)
-                for position in metadata.get("fit_positions", metadata["positions"])
+                int(position) for position in metadata.get("fit_positions", metadata["positions"])
             ),
             fit_base_token_ids=tuple(
                 int(token) for token in metadata.get("fit_base_token_ids", [])
@@ -260,8 +247,7 @@ class CachedSteeringArtifact:
             ),
             input_directions=input_directions,
             runtime_changed_token_positions=tuple(
-                int(position)
-                for position in metadata.get("runtime_changed_token_positions", [])
+                int(position) for position in metadata.get("runtime_changed_token_positions", [])
             ),
             intervention_overlaps_changed_tokens=bool(
                 metadata.get("intervention_overlaps_changed_tokens", True)
@@ -279,9 +265,7 @@ class SteeringFitReport:
     metadata: dict[str, object]
     direction_l2_by_layer: dict[str, tuple[float, ...]]
     mean_cosine_to_direction_by_layer: dict[str, tuple[float, ...]]
-    input_direction_l2_by_layer: dict[str, tuple[float, ...]] = field(
-        default_factory=dict
-    )
+    input_direction_l2_by_layer: dict[str, tuple[float, ...]] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, object]:
         """Return a JSON-serializable fit report."""
@@ -291,12 +275,10 @@ class SteeringFitReport:
             layer: list(values) for layer, values in self.direction_l2_by_layer.items()
         }
         payload["mean_cosine_to_direction_by_layer"] = {
-            layer: list(values)
-            for layer, values in self.mean_cosine_to_direction_by_layer.items()
+            layer: list(values) for layer, values in self.mean_cosine_to_direction_by_layer.items()
         }
         payload["input_direction_l2_by_layer"] = {
-            layer: list(values)
-            for layer, values in self.input_direction_l2_by_layer.items()
+            layer: list(values) for layer, values in self.input_direction_l2_by_layer.items()
         }
         return payload
 
@@ -362,9 +344,7 @@ def changed_language_residual_positions(
     sequence_length_with_state = len(base_token_ids) + 1
     return tuple(
         index - sequence_length_with_state
-        for index, (base, target) in enumerate(
-            zip(base_token_ids, target_token_ids, strict=True)
-        )
+        for index, (base, target) in enumerate(zip(base_token_ids, target_token_ids, strict=True))
         if base != target
     )
 
@@ -408,9 +388,7 @@ def fit_cached_steering(
     if not runtime_positions or len(set(runtime_positions)) != len(runtime_positions):
         raise ValueError("Runtime positions must be nonempty and unique")
     if len(runtime_positions) != len(positions) and len(positions) != 1:
-        raise ValueError(
-            "Fit and runtime spans must match unless one fit token is broadcast"
-        )
+        raise ValueError("Fit and runtime spans must match unless one fit token is broadcast")
     if direction_component not in {"post_residual", "layer_update"}:
         raise ValueError(f"Unsupported direction component {direction_component!r}")
     random.seed(noise_seed)
@@ -438,19 +416,14 @@ def fit_cached_steering(
         try:
             if native_prompt != runtime_target_prompt:
                 raise ValueError(
-                    "Runtime target prompt must exactly match the environment's native "
-                    "instruction"
+                    "Runtime target prompt must exactly match the environment's native instruction"
                 )
             observation, _ = environment.reset(seed=simulator_seed + episode_index)
             noise = fixed_noise(policy, noise_seed + episode_index, torch_device)
             base_batch = prepare_libero_batch(adapter, observation, base_prompt)
             target_batch = prepare_libero_batch(adapter, observation, target_prompt)
-            runtime_base_batch = prepare_libero_batch(
-                adapter, observation, runtime_base_prompt
-            )
-            runtime_target_batch = prepare_libero_batch(
-                adapter, observation, runtime_target_prompt
-            )
+            runtime_base_batch = prepare_libero_batch(adapter, observation, runtime_base_prompt)
+            runtime_target_batch = prepare_libero_batch(adapter, observation, runtime_target_prompt)
             observed_token_ids = {
                 "fit_base": attended_language_token_ids(base_batch),
                 "fit_target": attended_language_token_ids(target_batch),
@@ -499,8 +472,7 @@ def fit_cached_steering(
                 base_input = base_inputs[layer][len(episode_samples)]
                 target_input = target_inputs[layer][len(episode_samples)]
                 input_difference = (
-                    target_input[..., indices, :].float()
-                    - base_input[..., indices, :].float()
+                    target_input[..., indices, :].float() - base_input[..., indices, :].float()
                 )
                 if direction_component == "layer_update":
                     difference = difference - input_difference
@@ -528,9 +500,7 @@ def fit_cached_steering(
             call_cosines.append(
                 float(np.mean([_cosine(sample, direction) for sample in call_samples]))
             )
-            input_call_samples = [
-                episode[call_index] for episode in input_samples[layer]
-            ]
+            input_call_samples = [episode[call_index] for episode in input_samples[layer]]
             input_direction = torch.stack(input_call_samples).mean(dim=0)
             call_input_directions.append(input_direction)
             call_input_norms.append(float(input_direction.norm().item()))

@@ -90,11 +90,14 @@ class ProbeDataset:
         count = self.features.shape[0]
         if self.features.ndim != 2 or count == 0:
             raise ValueError("Probe features must be a nonempty matrix")
-        if any(value.shape != (count,) for value in (
-            self.label_indices,
-            self.task_ids,
-            self.episode_indices,
-        )):
+        if any(
+            value.shape != (count,)
+            for value in (
+                self.label_indices,
+                self.task_ids,
+                self.episode_indices,
+            )
+        ):
             raise ValueError("Probe metadata must align with feature rows")
         if not self.labels or int(self.label_indices.min()) < 0:
             raise ValueError("Probe labels are empty or invalid")
@@ -174,9 +177,7 @@ def pair_key(labels: tuple[str, str]) -> str:
     return "|".join(sorted(labels))
 
 
-def save_pairwise_visual_probe_bank(
-    bank: PairwiseVisualProbeBank, path: str | Path
-) -> None:
+def save_pairwise_visual_probe_bank(bank: PairwiseVisualProbeBank, path: str | Path) -> None:
     """Save pairwise probes as primitive values and tensors only."""
 
     destination = Path(path)
@@ -233,15 +234,11 @@ def load_pairwise_visual_probe_bank(path: str | Path) -> PairwiseVisualProbeBank
     return PairwiseVisualProbeBank(
         representation_layer=int(payload["representation_layer"]),
         representation_position=int(payload["representation_position"]),
-        representation_pool=cast(
-            RepresentationPool, payload.get("representation_pool", "token")
-        ),
+        representation_pool=cast(RepresentationPool, payload.get("representation_pool", "token")),
         neutral_prompt=str(payload["neutral_prompt"]),
         probes=probes,
         training_task_ids=tuple(int(value) for value in payload["training_task_ids"]),
-        training_episode_indices=tuple(
-            int(value) for value in payload["training_episode_indices"]
-        ),
+        training_episode_indices=tuple(int(value) for value in payload["training_episode_indices"]),
     )
 
 
@@ -280,9 +277,7 @@ def load_visual_probe_bank(path: str | Path) -> VisualProbeBank:
         labels=tuple(str(value) for value in payload["labels"]),
         representation_layer=int(payload["representation_layer"]),
         representation_position=int(payload["representation_position"]),
-        representation_pool=cast(
-            RepresentationPool, payload.get("representation_pool", "token")
-        ),
+        representation_pool=cast(RepresentationPool, payload.get("representation_pool", "token")),
         neutral_prompt=str(payload["neutral_prompt"]),
         weight=cast(Tensor, payload["weight"]),
         alpha=float(payload["alpha"]),
@@ -290,9 +285,7 @@ def load_visual_probe_bank(path: str | Path) -> VisualProbeBank:
         divergence_threshold=float(payload["divergence_threshold"]),
         confidence_floor=float(payload["confidence_floor"]),
         training_task_ids=tuple(int(value) for value in payload["training_task_ids"]),
-        training_episode_indices=tuple(
-            int(value) for value in payload["training_episode_indices"]
-        ),
+        training_episode_indices=tuple(int(value) for value in payload["training_episode_indices"]),
     )
 
 
@@ -329,9 +322,7 @@ def probe_logits(features: Tensor, weight: Tensor) -> Tensor:
 def leave_episode_out_logits(dataset: ProbeDataset, *, alpha: float) -> Tensor:
     """Predict every row using a probe that excludes its episode index."""
 
-    result = torch.empty(
-        (dataset.features.shape[0], len(dataset.labels)), dtype=torch.float64
-    )
+    result = torch.empty((dataset.features.shape[0], len(dataset.labels)), dtype=torch.float64)
     for episode_index in torch.unique(dataset.episode_indices).tolist():
         held_out = dataset.episode_indices == int(episode_index)
         training = ~held_out
@@ -460,9 +451,7 @@ def select_probe(
         logits = leave_episode_out_logits(dataset, alpha=alpha)
         accuracy = float((logits.argmax(dim=1) == dataset.label_indices).double().mean())
         for temperature in temperature_candidates:
-            examples = _calibration_examples(
-                dataset, logits, specs, temperature=temperature
-            )
+            examples = _calibration_examples(dataset, logits, specs, temperature=temperature)
             calibration = calibrate_conflict_monitor(
                 examples,
                 divergence_candidates=(0.05, 0.10, 0.15, 0.20, 0.25),
@@ -593,9 +582,7 @@ def select_pairwise_probes(
             logits = leave_episode_out_logits(subset, alpha=alpha)
             accuracy = float((logits.argmax(dim=1) == subset.label_indices).double().mean())
             for temperature in temperature_candidates:
-                examples = _pair_probe_examples(
-                    subset, logits, specs, temperature=temperature
-                )
+                examples = _pair_probe_examples(subset, logits, specs, temperature=temperature)
                 calibration = calibrate_conflict_monitor(
                     examples,
                     divergence_candidates=(0.05, 0.10, 0.15, 0.20, 0.25),
@@ -779,11 +766,7 @@ class ProbeEvaluationReport:
 
     def to_dict(self) -> dict[str, object]:
         return {
-            **{
-                key: value
-                for key, value in asdict(self).items()
-                if key not in {"examples"}
-            },
+            **{key: value for key, value in asdict(self).items() if key not in {"examples"}},
             "examples": [
                 {
                     **{
@@ -838,9 +821,7 @@ def evaluate_visual_probe_monitor(
     if dataset.labels != bank.labels:
         raise ValueError("Evaluation label vocabulary differs from probe bank")
     logits = probe_logits(dataset.features, bank.weight)
-    examples = _calibration_examples(
-        dataset, logits, specs_by_task, temperature=bank.temperature
-    )
+    examples = _calibration_examples(dataset, logits, specs_by_task, temperature=bank.temperature)
     point = evaluate_monitor_operating_point(
         examples,
         divergence_threshold=bank.divergence_threshold,
@@ -873,11 +854,7 @@ class PairwiseProbeFitReport:
 
     def to_dict(self) -> dict[str, object]:
         return {
-            **{
-                key: value
-                for key, value in asdict(self).items()
-                if key != "selections"
-            },
+            **{key: value for key, value in asdict(self).items() if key != "selections"},
             "selections": [
                 {
                     "labels": selection.labels,
@@ -890,9 +867,7 @@ class PairwiseProbeFitReport:
                             "alpha": row.alpha,
                             "temperature": row.temperature,
                             "multiclass_accuracy": row.multiclass_accuracy,
-                            "selected_operating_point": asdict(
-                                row.calibration.selected
-                            ),
+                            "selected_operating_point": asdict(row.calibration.selected),
                         }
                         for row in selection.rows
                     ],
@@ -978,11 +953,7 @@ class PairwiseProbeEvaluationReport:
 
     def to_dict(self) -> dict[str, object]:
         return {
-            **{
-                key: value
-                for key, value in asdict(self).items()
-                if key != "examples"
-            },
+            **{key: value for key, value in asdict(self).items() if key != "examples"},
             "examples": [
                 {
                     **{
@@ -1116,12 +1087,8 @@ def build_parser() -> argparse.ArgumentParser:
     pair_evaluate.add_argument("--checkpoint", type=Path, required=True)
     pair_evaluate.add_argument("--bank", type=Path, required=True)
     pair_evaluate.add_argument("--tasks", type=_integers, default=(3, 5, 7, 9))
-    pair_evaluate.add_argument(
-        "--episodes", type=_integers, default=(15, 16, 17, 18, 19)
-    )
-    pair_evaluate.add_argument(
-        "--device", choices=("cpu", "cuda", "mps"), default="mps"
-    )
+    pair_evaluate.add_argument("--episodes", type=_integers, default=(15, 16, 17, 18, 19))
+    pair_evaluate.add_argument("--device", choices=("cpu", "cuda", "mps"), default="mps")
     pair_evaluate.add_argument("--output", type=Path, required=True)
     return parser
 

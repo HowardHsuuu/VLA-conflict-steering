@@ -85,9 +85,7 @@ def prefix_snapshot(policy: Any, batch: dict[str, Any]) -> PrefixSnapshot:
     model = policy.model
     image_lengths: list[int] = []
 
-    def capture_image_length(
-        _module: Any, _inputs: tuple[object, ...], output: Tensor
-    ) -> None:
+    def capture_image_length(_module: Any, _inputs: tuple[object, ...], output: Tensor) -> None:
         if not isinstance(output, Tensor) or output.ndim < 3:
             raise TypeError("SmolVLA connector must emit an image-token tensor")
         image_lengths.append(int(output.shape[1]))
@@ -238,8 +236,7 @@ def _token_patches(
         for image_index, length in enumerate(conflict.image_lengths):
             labels.extend(f"image_{image_index}:{index}" for index in range(length))
         labels.extend(
-            f"language_{index}:{token!r}"
-            for index, token in enumerate(conflict.language_tokens)
+            f"language_{index}:{token!r}" for index, token in enumerate(conflict.language_tokens)
         )
         labels.extend(f"state:{index}" for index in range(len(conflict.state_positions)))
         if len(labels) != conflict.sequence_length:

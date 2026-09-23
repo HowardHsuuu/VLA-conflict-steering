@@ -64,9 +64,7 @@ class ExpertOutputAdd:
         self.positions = positions
         self.calls = 0
 
-    def __call__(
-        self, _module: Any, _inputs: tuple[object, ...], output: object
-    ) -> Tensor:
+    def __call__(self, _module: Any, _inputs: tuple[object, ...], output: object) -> Tensor:
         if not isinstance(output, Tensor):
             raise TypeError("Expected a tensor expert output")
         if self.calls:
@@ -219,11 +217,7 @@ def sample_with_expert_directions(
     layers, final_norm = expert_layers(policy)
     if spec is not None and spec.layer >= len(layers):
         raise ValueError("Expert-steering layer is outside the decoder")
-    if (
-        spec is not None
-        and spec.interface == "expert_output"
-        and spec.layer != len(layers) - 1
-    ):
+    if spec is not None and spec.interface == "expert_output" and spec.layer != len(layers) - 1:
         raise ValueError("Expert-output steering requires the final expert layer")
     expected_steps = set(range(int(model.config.num_steps)))
     if directions is not None and set(directions) != expected_steps:
@@ -294,9 +288,7 @@ def sample_with_oracle_expert_patch(
             device=x_t.device,
         )
         if spec.interface == "expert_output":
-            _, correct_output = capture_expert_output(
-                model, correct, x_t, timestep, final_norm
-            )
+            _, correct_output = capture_expert_output(model, correct, x_t, timestep, final_norm)
             replacement = ActivationReplace((correct_output,), positions=spec.token_positions)
             handle = final_norm.register_forward_hook(replacement)
             try:
@@ -455,9 +447,7 @@ def _initial_snapshots(
                 raise ValueError(f"The {role} prompt must exactly match the native instruction")
             observation, _ = environment.reset(seed=simulator_seed + episode_index)
             if scene_condition is not None:
-                observation, _ = apply_unique_bowl_scene(
-                    environment, condition=scene_condition
-                )
+                observation, _ = apply_unique_bowl_scene(environment, condition=scene_condition)
             conflict = prefix_snapshot(
                 policy, prepare_libero_batch(adapter, observation, conflict_prompt)
             )
@@ -607,9 +597,7 @@ def run_expert_steering_screen(
     )
 
 
-ExpertSteeringCondition = Literal[
-    "correct", "conflict", "steered", "wrong_sign", "oracle_steered"
-]
+ExpertSteeringCondition = Literal["correct", "conflict", "steered", "wrong_sign", "oracle_steered"]
 VALID_EXPERT_STEERING_CONDITIONS = frozenset(
     {"correct", "conflict", "steered", "wrong_sign", "oracle_steered"}
 )
@@ -779,9 +767,7 @@ def run_expert_steering_closed_loop(
             try:
                 observation, _ = environment.reset(seed=simulator_seed + episode_index)
                 if scene_condition is not None:
-                    observation, _ = apply_unique_bowl_scene(
-                        environment, condition=scene_condition
-                    )
+                    observation, _ = apply_unique_bowl_scene(environment, condition=scene_condition)
                 while step < max_steps and not success:
                     prompt = correct_prompt if condition == "correct" else conflict_prompt
                     snapshot = prefix_snapshot(
@@ -850,9 +836,7 @@ def run_expert_steering_closed_loop(
             if episode.condition == "oracle_steered"
         ),
         steered_runtime_correct_prompt_forwards=sum(
-            episode.steering_calls
-            for episode in outcomes
-            if episode.condition == "oracle_steered"
+            episode.steering_calls for episode in outcomes if episode.condition == "oracle_steered"
         ),
         runtime_prompt_rewrites=0,
         language_token_interventions=0,

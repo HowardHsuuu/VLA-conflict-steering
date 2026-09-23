@@ -70,9 +70,11 @@ def _candidate_log_score(
     answer_ids = input_ids[:, prompt_length:]
     answer_mask = attention_mask[:, prompt_length:].to(dtype=torch.bool)
     predicting_logits = logits[:, prompt_length - 1 : -1].float()
-    token_scores = torch.log_softmax(predicting_logits, dim=-1).gather(
-        -1, answer_ids.unsqueeze(-1)
-    ).squeeze(-1)
+    token_scores = (
+        torch.log_softmax(predicting_logits, dim=-1)
+        .gather(-1, answer_ids.unsqueeze(-1))
+        .squeeze(-1)
+    )
     score = (token_scores * answer_mask).sum()
     if length_normalize:
         score = score / answer_mask.sum().clamp_min(1)

@@ -34,17 +34,13 @@ class CacheDeltaLocus:
             raise ValueError("Cache-delta locus name must not be empty")
         if self.layer < 0:
             raise ValueError("Cache-delta layer must be nonnegative")
-        if not self.token_positions or len(set(self.token_positions)) != len(
-            self.token_positions
-        ):
+        if not self.token_positions or len(set(self.token_positions)) != len(self.token_positions):
             raise ValueError("Token positions must be nonempty and unique")
         if any(position < 0 for position in self.token_positions):
             raise ValueError("Token positions must be absolute and nonnegative")
         if self.component not in {"key_states", "value_states"}:
             raise ValueError("Cache-delta component must be key_states or value_states")
-        if not self.denoising_steps or len(set(self.denoising_steps)) != len(
-            self.denoising_steps
-        ):
+        if not self.denoising_steps or len(set(self.denoising_steps)) != len(self.denoising_steps):
             raise ValueError("Denoising steps must be nonempty and unique")
 
 
@@ -357,15 +353,9 @@ def fit_executed_action_scale(
         noise = fixed_noise(policy, noise_seed + episode_index, device)
         conflict_chunk = sample_with_learned_cache(policy, conflict, noise, None, None)
         correct_chunk = sample_with_learned_cache(policy, correct, noise, None, None)
-        steered_chunk = sample_with_learned_cache(
-            policy, conflict, noise, spec, directions
-        )
-        target_delta = (
-            correct_chunk[:, :1] - conflict_chunk[:, :1]
-        ).detach().cpu().double()
-        steering_effect = (
-            steered_chunk[:, :1] - conflict_chunk[:, :1]
-        ).detach().cpu().double()
+        steered_chunk = sample_with_learned_cache(policy, conflict, noise, spec, directions)
+        target_delta = (correct_chunk[:, :1] - conflict_chunk[:, :1]).detach().cpu().double()
+        steering_effect = (steered_chunk[:, :1] - conflict_chunk[:, :1]).detach().cpu().double()
         numerator += torch.sum(steering_effect * target_delta)
         denominator += torch.sum(steering_effect * steering_effect)
     if not bool(torch.isfinite(denominator)) or float(denominator) <= 1e-20:
@@ -420,12 +410,8 @@ def run_learned_cache_loo_screen(
     all_steps = tuple(range(int(policy.model.config.num_steps)))
     state_value = CacheDeltaLocus("l7_state_value_t2", 7, (143,), "value_states", (2,))
     changed_key = CacheDeltaLocus("l13_changed_key_t9", 13, (135,), "key_states", (9,))
-    state_value_all = CacheDeltaLocus(
-        "l7_state_value_all", 7, (143,), "value_states", all_steps
-    )
-    changed_key_all = CacheDeltaLocus(
-        "l13_changed_key_all", 13, (135,), "key_states", all_steps
-    )
+    state_value_all = CacheDeltaLocus("l7_state_value_all", 7, (143,), "value_states", all_steps)
+    changed_key_all = CacheDeltaLocus("l13_changed_key_all", 13, (135,), "key_states", all_steps)
     specs = (
         LearnedCacheSpec("l7_state_value_local", (state_value,)),
         LearnedCacheSpec("l13_changed_key_local", (changed_key,)),
@@ -472,9 +458,7 @@ def run_learned_cache_loo_screen(
         )
         training_pairs = tuple(episode_pairs[episode] for episode in training_episodes)
         directions = mean_cache_directions(training_pairs, unique_loci)
-        training_pair_map = {
-            episode: episode_pairs[episode] for episode in training_episodes
-        }
+        training_pair_map = {episode: episode_pairs[episode] for episode in training_episodes}
         fitted_scale = fit_executed_action_scale(
             policy,
             training_pair_map,
@@ -526,9 +510,7 @@ def run_learned_cache_loo_screen(
             correct_chunk[:, :1, :action_dim],
             calibrated_chunk[:, :1, :action_dim],
         )
-        calibrated_full_chunk = recovery_score(
-            conflict_chunk, correct_chunk, calibrated_chunk
-        )
+        calibrated_full_chunk = recovery_score(conflict_chunk, correct_chunk, calibrated_chunk)
         rows.append(
             {
                 "episode_index": heldout_episode,
@@ -541,17 +523,11 @@ def run_learned_cache_loo_screen(
                 "executed_directional_recovery": calibrated_executed.directional_recovery,
                 "executed_mse_recovery": calibrated_executed.mse_recovery,
                 "executed_effect_l2": calibrated_executed.effect_l2,
-                "executed_conflict_correct_l2": (
-                    calibrated_executed.conflict_correct_l2
-                ),
-                "chunk_directional_recovery": (
-                    calibrated_full_chunk.directional_recovery
-                ),
+                "executed_conflict_correct_l2": (calibrated_executed.conflict_correct_l2),
+                "chunk_directional_recovery": (calibrated_full_chunk.directional_recovery),
                 "chunk_mse_recovery": calibrated_full_chunk.mse_recovery,
                 "chunk_effect_l2": calibrated_full_chunk.effect_l2,
-                "chunk_conflict_correct_l2": (
-                    calibrated_full_chunk.conflict_correct_l2
-                ),
+                "chunk_conflict_correct_l2": (calibrated_full_chunk.conflict_correct_l2),
             }
         )
         if progress is not None:
@@ -678,9 +654,7 @@ def run_learned_cache_closed_loop(
         )
         fitted_scale = fit_executed_action_scale(
             policy,
-            {
-                episode: training_pairs[episode] for episode in fold_training_episodes
-            },
+            {episode: training_pairs[episode] for episode in fold_training_episodes},
             spec,
             directions,
             noise_seed=107,
@@ -709,9 +683,7 @@ def run_learned_cache_closed_loop(
                 close_threshold = initial_gripper_width * grasp_close_fraction
                 while step < max_steps and not success:
                     current_gripper_width = _gripper_width(observation)
-                    minimum_gripper_width = min(
-                        minimum_gripper_width, current_gripper_width
-                    )
+                    minimum_gripper_width = min(minimum_gripper_width, current_gripper_width)
                     if (
                         condition == "grasp_gated"
                         and grasp_latched_step is None
@@ -735,9 +707,7 @@ def run_learned_cache_closed_loop(
                         condition == "grasp_gated" and grasp_latched_step is not None
                     )
                     if condition in {"correct", "conflict"} or not steering_active:
-                        chunk = sample_with_learned_cache(
-                            policy, snapshot, noise, None, None
-                        )
+                        chunk = sample_with_learned_cache(policy, snapshot, noise, None, None)
                     else:
                         active_spec = spec
                         if condition in {
@@ -747,9 +717,7 @@ def run_learned_cache_closed_loop(
                         }:
                             correct_snapshot = prefix_snapshot(
                                 policy,
-                                prepare_libero_batch(
-                                    adapter, observation, correct_prompt
-                                ),
+                                prepare_libero_batch(adapter, observation, correct_prompt),
                             )
                             active_loci = loci
                             if condition in {
@@ -770,9 +738,7 @@ def run_learned_cache_closed_loop(
                                     tuple(range(int(policy.model.config.num_steps))),
                                 )
                                 active_loci = (broad_value, loci[1])
-                                active_spec = LearnedCacheSpec(
-                                    condition, active_loci
-                                )
+                                active_spec = LearnedCacheSpec(condition, active_loci)
                             active_directions = mean_cache_directions(
                                 ((snapshot, correct_snapshot),), active_loci
                             )

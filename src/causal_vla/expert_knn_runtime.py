@@ -131,6 +131,7 @@ def _expert_prototype_from_payload(payload: object) -> ExpertPrototypeBank:
         token_positions=tuple(int(value) for value in spec_payload["token_positions"]),
         interface=cast(Literal["post_residual", "expert_output"], spec_payload["interface"]),
     )
+
     def tensor_map(name: str) -> dict[int, Tensor]:
         value = payload.get(name)
         if not isinstance(value, dict) or not all(
@@ -512,9 +513,7 @@ def fit_expert_prototype_bank(
             if scene_condition is not None:
                 observation, _ = apply_unique_bowl_scene(environment, condition=scene_condition)
             elif hidden_object is not None:
-                observation, _ = apply_hidden_object_scene(
-                    environment, object_name=hidden_object
-                )
+                observation, _ = apply_hidden_object_scene(environment, object_name=hidden_object)
             step = 0
             success = False
             sampled_steps: list[int] = []
@@ -990,8 +989,7 @@ def run_expert_knn_closed_loop(
                     "using visual scene interventions"
                 )
             if hidden_object is not None and (
-                native_prompt.casefold()
-                != object_conflict_task(task_id).native_prompt.casefold()
+                native_prompt.casefold() != object_conflict_task(task_id).native_prompt.casefold()
             ):
                 environment.close()
                 raise ValueError("Native prompt does not match the object conflict task spec")

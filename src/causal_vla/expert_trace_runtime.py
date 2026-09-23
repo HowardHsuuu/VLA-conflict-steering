@@ -72,9 +72,7 @@ class BatchedPostResidualPatch:
         self.residual_input: Tensor | None = None
         self.calls = 0
 
-    def capture_residual(
-        self, _module: nn.Module, inputs: tuple[object, ...]
-    ) -> None:
+    def capture_residual(self, _module: nn.Module, inputs: tuple[object, ...]) -> None:
         if not inputs or not isinstance(inputs[0], Tensor):
             raise TypeError("Expected a tensor residual input")
         if self.residual_input is not None:
@@ -212,9 +210,7 @@ def patched_expert_velocity(
     return cast(Tensor, velocity)
 
 
-def expert_flow_states(
-    model: Any, snapshot: PrefixSnapshot, noise: Tensor
-) -> tuple[Tensor, ...]:
+def expert_flow_states(model: Any, snapshot: PrefixSnapshot, noise: Tensor) -> tuple[Tensor, ...]:
     states: list[Tensor] = [noise.clone()]
     x_t = noise.clone()
     dt = -1.0 / int(model.config.num_steps)
@@ -304,9 +300,7 @@ def run_expert_causal_trace(
                 raise ValueError(f"The {role} prompt must exactly match the native instruction")
             observation, _ = environment.reset(seed=simulator_seed + episode_index)
             if scene_condition is not None:
-                observation, _ = apply_unique_bowl_scene(
-                    environment, condition=scene_condition
-                )
+                observation, _ = apply_unique_bowl_scene(environment, condition=scene_condition)
             conflict_snapshot = prefix_snapshot(
                 policy, prepare_libero_batch(adapter, observation, conflict_prompt)
             )
