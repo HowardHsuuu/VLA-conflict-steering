@@ -8,7 +8,8 @@ action-flow steering.
 
 [Project page](https://vla-conflict-steering.howardhsu.chatgpt.site/) ·
 [Frozen protocol](configs/cross_task_decisive_v1.toml) ·
-[Public result release](results/cross_task_decisive_v1/manifest.json)
+[Public result release](results/cross_task_decisive_v1/manifest.json) ·
+[Qualitative rollouts](assets/rollouts/cross_task_decisive_gallery_v1/manifest.json)
 
 ## Main result
 
@@ -39,6 +40,18 @@ Under the same monitor information, prompt correction succeeds in 49/60 trials
 and action-flow steering in 45/60. We therefore treat action-flow steering as a
 non-language intervention surface for settings where the instruction channel is
 immutable, not as a replacement for prompt correction.
+
+## Qualitative rollouts
+
+The release includes three matched failure/recovery pairs replayed from cells in
+the frozen evaluation: one absent-object conflict and two spatial conflicts. Each
+pair fixes the scene, conflicting instruction, simulator state, and action-flow
+noise while changing only whether the learned monitor may trigger action-flow
+steering. All six MP4s reproduce their recorded outcomes exactly and include
+hash-bound manifests.
+
+These examples are outcome-selected mechanism illustrations, not new trials or
+representative samples. The aggregate result above remains the efficacy evidence.
 
 ## Method
 
@@ -107,9 +120,10 @@ checkpoint in LIBERO simulation. It does not establish universal conflict
 detection, zero-shot transfer, real-robot safety, or superiority to replanning or
 prompt correction.
 
-The rollout videos in `assets/rollouts/` are an explicitly outcome-selected
-mechanism illustration from the earlier development study, not samples from the
-660-rollout evaluation.
+The rollout videos in `assets/rollouts/` are explicitly outcome-selected
+mechanism illustrations. The three-pair gallery replays cells from the frozen
+660-rollout evaluation; the retained `spatial_scene10_noise457` pair comes from
+the earlier development study. Neither is a random sample.
 
 ## License
 

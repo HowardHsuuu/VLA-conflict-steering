@@ -1,0 +1,15 @@
+{
+  "artifact_kind": "cross_task_decisive_qualitative_gallery_v1",
+  "interpretation_limit": "Exact-cell qualitative replay only. The six reruns must reproduce their frozen outcomes, but they are not new trials, representative sampling, or efficacy estimates.",
+  "pair_count": 3,
+  "schema_version": 1,
+  "selection_rule": "one object-presence task and two spatial-relation tasks; first configured scene and first configured flow-noise seed; frozen outcomes were already known, so all displayed repairs are labeled outcome-selected qualitative replays",
+  "source_plan_sha256": "fa0d5fb33abb72ffd581af7c697b7ce2e3730d16c4dc03261947927dfb2bf70d",
+  "status": "complete",
+  "tasks": [
+    "object-ketchup-vs-absent-milk",
+    "spatial-cookie-box-vs-cabinet",
+    "spatial-ramekin-vs-cookie-box"
+  ],
+  "video_count": 6
+}
